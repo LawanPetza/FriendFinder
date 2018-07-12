@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <title>FriendFinder</title>
 
-   <!-- Latest compiled and minified CSS & JS -->
-   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-   <script src="https://code.jquery.com/jquery.js"></script>
-   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
- 
+    <!-- Latest compiled and minified CSS & JS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
 </head>
 
 <body>
@@ -35,7 +35,7 @@
 
                     <div class="form-group">
                         <label for="name">Name (Required)</label>
-                        <input type="name" class="form-control" id="name-input">
+                        <input type="text" id="name-input" class="validate" required>
                     </div>
                 </div>
                 <div class="container">
@@ -43,7 +43,7 @@
                         <div class="col-lg-12">
                             <div class="form-group">
                                 <label for="photo">Link to Photo Image (Required)</label>
-                                <input type="photo" class="form-control" id="photo-input">
+                                <input type="text" id="photo-input" class="validate" required>
                             </div>
                         </div>
                     </div>
@@ -254,86 +254,155 @@
 
             </div>
         </div>
-
+        <!-- Survey Submit Button -->
         <div class="row">
             <div class="col-lg-12">
-                    <button id = "submit" type="button" class="btn btn-primary btn-lg btn-block">Submit</button>
+                <button id="submit" type="button" class="btn btn-primary btn-lg btn-block">Submit</button>
             </div>
         </div>
         <hr class="my-4">
-      
+
 
     </div>
 
     <div class="container">
         <div class="row">
-                <footer class="footer">
-                        <div class="container">
-                            <p>
-                                <a href="/api/survey">API Friend List</a> |
-                                <a href="#">GitHub Repo</a>
-                            </p>
-                        </div>
-                    </footer>
+            <footer class="footer">
+                <div class="container">
+                    <p>
+                        <a href="/api/friends">API Friend List</a> |
+                        <a href="#">GitHub Repo</a>
+                    </p>
+                </div>
+            </footer>
 
         </div>
     </div>
 
-  
 
-</body>
+    <!-- Materialize Modal Structure -->
+    <!-- <div id="modal1" class="modal">
+        <div class="modal-content">
+            <h4>Meet Your New Best Friend</h4>
+            <h5 id="matchName"></h5>
+            <img id="matchImage" src="" alt="No Image" width=2 50px>
+        </div>
+        <div class="modal-footer">
+            <a href="/survey" class=" modal-action modal-close waves-effect waves-green btn-flat">Fill Again!</a>
+        </div>
+    </div>
 
-<script type="text/javascript">
+    </div> -->
 
-    // In this code below we create the Front-end JavaScript which "POSTS" our form data to our express server.
-    // In essence, when the user hits submit, jQuery grabs all of the fields then sends a post request to our api
-    // Our api recognizes the route (/api/tables)... and then runs the associated code (found in api-routes.js).
-    // In this case the associated code "saves" the data to the table-data.js file or waitinglist-data.js file
-    // window.onload = (function() {
+    	<!-- Modal Dialog Displaying Closest Friend Match -->
+	<div id="modal1" class="modal">
+		<div class="modal-content">
+			<h4>Closest Friend Match</h4>
+			<div class="divider"></div>
+			<h5 id="matchName"></h5>
+			<img id="matchImage" class="materialboxed" width=2 50px src="">
+		</div>
+		<div class="modal-footer">
+			<a href="/survey" class="modal-action modal-close waves-effect waves-green btn-flat">Fill Again!</a>
+		</div>
+    </div>
 
-  
-    $("#submit").on("click", function(event) {
-        // console.log("click")
-      event.preventDefault();
 
-    
+    <script type="text/javascript">
 
-      // Here we grab the form elements
-      var newFriend = {
-        name: $("#name-input").val().trim(),
-        image: $("#photo-input").val().trim(),
-        scores: [$("#question-1").val().trim(), $("#question-2").val().trim(), $("#question-3").val().trim(), $("#question-4").val().trim(), $("#question-5").val().trim(), $("#question-6").val().trim(), $("#question-7").val().trim(), $("#question-9").val().trim(), $("#question-10").val().trim()]
-      };
+        // In this code below we create the Front-end JavaScript which "POSTS" our form data to our express server.
+        // In essence, when the user hits submit, jQuery grabs all of the fields then sends a post request to our api
+        // Our api recognizes the route (/api/tables)... and then runs the associated code (found in api-routes.js).
+        // In this case the associated code "saves" the data to the table-data.js file or waitinglist-data.js file
+        // window.onload = (function() {
 
-      console.log(newFriend);
+        $(document).ready(function () {
+            $("#submit").on("click", function (event) {
+                // console.log("click")
+                event.preventDefault();
 
-      // This line is the magic. It"s very similar to the standard ajax function we used.
-      // Essentially we give it a URL, we give it the object we want to send, then we have a "callback".
-      // The callback is the response of the server. In our case, we set up code in api-routes that "returns" true or false
-      // depending on if a tables is available or not.
+                //form validation
+                function validateForm() {
+                    var isValid = true;
+                    $('.validate').each(function () {
+                        if ($(this).val() === '') {
+                            isValid = false;
+                        }
+                    });
+                    $('.custom-select').each(function () {
+                        if ($(this).val() === "") {
+                            isValid = false;
+                        }
+                    });
+                    return isValid;
+                }
 
-      $.post("/api/friends", newFriend,
-        function(data) {
+                //if everything is filled
+                if (validateForm() === true) {
 
-          // If a table is available... tell user they are booked.
-          if (data) {
-            alert("Sucess!");
-          }
+                    // Here we grab the form elements
+                    var newFriend = {
+                        name: $("#name-input").val().trim(),
+                        image: $("#photo-input").val().trim(),
+                        scores: [
+                            $("#question-1").val().trim(),
+                            $("#question-2").val().trim(),
+                            $("#question-3").val().trim(),
+                            $("#question-4").val().trim(),
+                            $("#question-5").val().trim(),
+                            $("#question-6").val().trim(),
+                            $("#question-7").val().trim(),
+                            $("#question-8").val().trim(),
+                            $("#question-9").val().trim(),
+                            $("#question-10").val().trim()
+                        ]
+                    };
 
-          // If a table is available... tell user they on the waiting list.
-          else {
-            alert("Sorry you are on the wait list");
-          }
+                    console.log(newFriend);
 
-          // Clear the form when submitting
-        //   $("#reserve-name").val("");
-        //   $("#reserve-phone").val("");
-        //   $("#reserve-email").val("");
-        //   $("#reserve-unique-id").val("");
+                    // This line is the magic. It"s very similar to the standard ajax function we used.
+                    // Essentially we give it a URL, we give it the object we want to send, then we have a "callback".
+                    // The callback is the response of the server. In our case, we set up code in api-routes that "returns" true or false
+                    // depending on if a tables is available or not.
 
+                    var currentURL = window.location.origin;
+                    //Add new friend to friends list
+                    $.post(currentURL + "/api/friends", newFriend, function (data) {
+
+                        $("#matchName").text(data.name);
+                        $("#matchImage").attr("src", data.image)
+
+
+
+
+                    });
+                    // Show the modal with the best match
+                    $('.modal').modal();
+
+                    // Clear the form when submitting
+                    $("#name-input").val("");
+                    $("#photo-input").val("");
+                    $("#question-1").val("");
+                    $("#question-2").val("");
+                    $("#question-3").val("");
+                    $("#question-4").val("");
+                    $("#question-5").val("");
+                    $("#question-6").val("");
+                    $("#question-7").val("");
+                    $("#question-8").val("");
+                    $("#question-9").val("");
+                    $("#question-10").val("");
+
+                } else {
+                    alert("Please fill out ALL fields before submitting survey!")
+
+                }
+
+                // return false;
+            });
         });
 
-    });
-// })
+    </script>
+</body>
 
-</script>
+</html>
