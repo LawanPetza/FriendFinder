@@ -35,7 +35,7 @@
 
                     <div class="form-group">
                         <label for="name">Name (Required)</label>
-                        <input type="text" id="name-input" class="validate" required>
+                        <input type="text" id="name-input" class="form-control" required>
                     </div>
                 </div>
                 <div class="container">
@@ -43,7 +43,7 @@
                         <div class="col-lg-12">
                             <div class="form-group">
                                 <label for="photo">Link to Photo Image (Required)</label>
-                                <input type="text" id="photo-input" class="validate" required>
+                                <input type="text" id="photo-input" class="form-control" required>
                             </div>
                         </div>
                     </div>
@@ -280,42 +280,52 @@
     </div>
 
 
-    <!-- Materialize Modal Structure -->
-    <!-- <div id="modal1" class="modal">
-        <div class="modal-content">
-            <h4>Meet Your New Best Friend</h4>
-            <h5 id="matchName"></h5>
-            <img id="matchImage" src="" alt="No Image" width=2 50px>
+    <!-- Modal -->
+  <div id="modal1" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+    
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"></button>
+              <h2>Best Match</h2>
+            </div>
+            <div class="modal-body">
+              <h3 id="matchName"></h3>
+              <img id="matchPhoto" src="https://media.licdn.com/mpr/mpr/shrinknp_400_400/p/6/005/064/1bd/3435aa3.jpg" alt="">
+            </div>
+            <div class="modal-footer">
+              <button href="/survey" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+    
         </div>
-        <div class="modal-footer">
-            <a href="/survey" class=" modal-action modal-close waves-effect waves-green btn-flat">Fill Again!</a>
-        </div>
-    </div>
-
-    </div> -->
+      </div>
 
     	<!-- Modal Dialog Displaying Closest Friend Match -->
-	<div id="modal1" class="modal">
-		<div class="modal-content">
-			<h4>Closest Friend Match</h4>
-			<div class="divider"></div>
-			<h5 id="matchName"></h5>
-			<img id="matchImage" class="materialboxed" width=2 50px src="">
+	<!-- <div id="modal1" class="modal" role = "dialog">
+        <div class = "modal-dialog">
+        
+        
+        <div class="modal-content">
+			<h2>Best Match</h2>
+			<div class="modal-body"></div>
+			<h3 id="matchName"></h3>
+			<img id="matchPhoto" src = "" alt = "" class="materialboxed" width=2 50px src="">
 		</div>
 		<div class="modal-footer">
-			<a href="/survey" class="modal-action modal-close waves-effect waves-green btn-flat">Fill Again!</a>
+			<a href="/survey" class="modal-action modal-close waves-effect waves-green btn-flat">Done</a>
 		</div>
     </div>
+</div> -->
 
 
     <script type="text/javascript">
-
         // In this code below we create the Front-end JavaScript which "POSTS" our form data to our express server.
         // In essence, when the user hits submit, jQuery grabs all of the fields then sends a post request to our api
         // Our api recognizes the route (/api/tables)... and then runs the associated code (found in api-routes.js).
         // In this case the associated code "saves" the data to the table-data.js file or waitinglist-data.js file
         // window.onload = (function() {
-
         $(document).ready(function () {
             $("#submit").on("click", function (event) {
                 // console.log("click")
@@ -324,26 +334,26 @@
                 //form validation
                 function validateForm() {
                     var isValid = true;
-                    $('.validate').each(function () {
+                    $('.form-control').each(function () {
                         if ($(this).val() === '') {
                             isValid = false;
                         }
                     });
+
                     $('.custom-select').each(function () {
+
                         if ($(this).val() === "") {
                             isValid = false;
                         }
                     });
                     return isValid;
                 }
-
                 //if everything is filled
                 if (validateForm() === true) {
-
                     // Here we grab the form elements
                     var newFriend = {
                         name: $("#name-input").val().trim(),
-                        image: $("#photo-input").val().trim(),
+                        photo: $("#photo-input").val().trim(),
                         scores: [
                             $("#question-1").val().trim(),
                             $("#question-2").val().trim(),
@@ -357,49 +367,27 @@
                             $("#question-10").val().trim()
                         ]
                     };
-
                     console.log(newFriend);
-
                     // This line is the magic. It"s very similar to the standard ajax function we used.
                     // Essentially we give it a URL, we give it the object we want to send, then we have a "callback".
                     // The callback is the response of the server. In our case, we set up code in api-routes that "returns" true or false
                     // depending on if a tables is available or not.
-
                     var currentURL = window.location.origin;
                     //Add new friend to friends list
                     $.post(currentURL + "/api/friends", newFriend, function (data) {
-
                         $("#matchName").text(data.name);
-                        $("#matchImage").attr("src", data.image)
-
-
-
-
+                        $("#matchPhoto").attr("src", data.photo)
                     });
+
                     // Show the modal with the best match
-                    $('.modal').modal();
-
-                    // Clear the form when submitting
-                    $("#name-input").val("");
-                    $("#photo-input").val("");
-                    $("#question-1").val("");
-                    $("#question-2").val("");
-                    $("#question-3").val("");
-                    $("#question-4").val("");
-                    $("#question-5").val("");
-                    $("#question-6").val("");
-                    $("#question-7").val("");
-                    $("#question-8").val("");
-                    $("#question-9").val("");
-                    $("#question-10").val("");
-
-                } else {
-                    alert("Please fill out ALL fields before submitting survey!")
-
+                    $('.modal').modal("toggle");
                 }
-
-                // return false;
-            });
+                 else {
+                    alert("Please fill out ALL fields before submitting survey!")
+                }
+                return false;
+          
+          });
         });
 
     </script>

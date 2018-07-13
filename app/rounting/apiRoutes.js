@@ -4,7 +4,7 @@
 // These data sources hold arrays of information on table-data, waitinglist, etc.
 // ===============================================================================
 
-var friendsData = require("../data/friends");
+var friendsArr = require("../data/friends");
 
 // ===============================================================================
 // ROUTING
@@ -18,7 +18,7 @@ module.exports = function (app) {
     // ---------------------------------------------------------------------------
 
     app.get("/api/friends", function (req, res) {
-        res.json(friendsData);
+        res.json(friendsArr);
     });
 
     // API POST Requests
@@ -33,26 +33,37 @@ module.exports = function (app) {
         // Note the code here. Our "server" will respond to requests and let users know if they have a table or not.
         // It will do this by sending out the value "true" have a table
         // req.body is available since we're using the body-parser middleware
-        var userResults = req.body.scores;
 
         //computer best match
-        var matchName = '';
-        var matchPhoto = '';
-        var totalDifference = 1000;
+        var bestMatch = {
+            Name: "",
+            photo: "",
+            Diff: 1000
+
+        }
+        
+        var userData = req.body;
+        var userScores = userData.scores;
+
+        var totalDiff = 0;
       
 
-        for (var i = 0; i < friendsData.length; i++) {
-            var diff = 0;
-            for (var j = 0; j < userResults.length; j++) {
-                diff += (Math.abs(parseInt(friendsData[i].scores[j]) - parseInt(userResults[j])));
-            }
+        for (var i = 0; i < friendsArr.length; i++) {
+            console.log(friendsArr[i].name);
+            totalDiff = 0;
+
+        
+            for (var j = 0; j < friendsArr[i].scores; j++) {
+                totalDiff += (Math.abs(parseInt(friendsArr[i].scores[j]) - parseInt(userScores[j])));
+            
 
             // scoresArr.push(totalDiff);
-            if ( diff<totalDifference){
-                totalDifference = diff;
-                matchName = friendsData[i].name;
-                matchPhoto = friendsData[i].image;
+            if (totalDiff <= bestMatch.Diff) {
+                bestMatch.name = friendsArr[i].name;
+                bestMatch.photo = friendsArr[i].Photo;
+                bestMatch.Diff = totalDiff;
             }
+        }
         }
         //after all friends are compared, find the best match
         // for (var i = 0; i < scoresArr.length; i++) {
@@ -64,8 +75,8 @@ module.exports = function (app) {
         // var bestFriend = friendsData[bestMatch];
         
     
-        friendsData.push(req.body);
-        res.json({status: "OK", matchName: matchName, matchPhoto: matchPhoto});
+        friendsArr.push(userData);
+        res.json(bestMatch);
     });
 
    
