@@ -65,29 +65,12 @@ module.exports = function (app) {
             }
         }
         }
-        //after all friends are compared, find the best match
-        // for (var i = 0; i < scoresArr.length; i++) {
-        //     if(scoresArr[i] <= scoresArr[bestMatch]) {
-        //         bestMatch = i;
-        //     }
-          
-        // }
-        // var bestFriend = friendsData[bestMatch];
         
     
         friendsArr.push(userData);
         res.json(bestMatch);
     });
 
-   
-
-    // ---------------------------------------------------------------------------
-    // I added this below code so you could clear out the table while working with the functionality.
-    // Don"t worry about it!
 };
-//   app.post("/api/clear", function() {
-//     // Empty out the arrays of data
-//     friendsData = [];
 
-//     console.log(friendsData);
 
